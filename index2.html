@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ชุดนอกเขต</title>
+   <style>
+        :root {
+            --bg-color: #f0f2f5;
+            --card-bg: #ffffff;
+            --text-main: #2d3436;
+            --border-color: #dfe6e9;
+            --blue-bg: #007bff;      --blue-text: #ffffff;    
+            --green-bg: #28a745;     --green-text: #ffffff;   
+            --yellow-bg: #ffc107;    --yellow-text: #212529;  
+            --red-bg: #dc3545;       --red-text: #ffffff;     
+        }
+
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            background-color: var(--bg-color); 
+            color: var(--text-main); 
+            margin: 0; 
+            padding: 0; /* Removing padding from body to let header touch edges */
+            padding-bottom: 50px; 
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 20px; }
+
+        /* --- 1. TITLE SECTION (Scrolls naturally) --- */
+        .title-section {
+            padding: 20px 0 10px 0;
+            background: var(--bg-color);
+        }
+        h1 { margin: 0; font-size: 2.5rem; color: #2c3e50; font-weight: 800; }
+        h2 { margin: 5px 0 0 0; font-size: 1.1rem; color: #666; font-weight: 500; }
+
+        /* --- 2. STICKY CONTROLS (The Solid Bar) --- */
+        .sticky-wrapper {
+            position: sticky; 
+            top: 0; 
+            z-index: 1000;
+            background-color: var(--bg-color); /* Matches body to hide content behind */
+            padding-bottom: 0;
+        }
+
+        .sticky-controls { 
+            background: var(--card-bg); 
+            padding: 15px 20px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+            
+            /* SQUARED LOOK for seamless join */
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 0; /* REMOVED MARGIN (Closes the gap) */
+        }
+
+        .controls { display: flex; flex-wrap: wrap; gap: 15px; align-items: center; max-width: 1400px; margin: 0 auto; }
+        .control-group { flex: 1; min-width: 200px; }
+        
+        select, input { 
+            width: 100%; padding: 10px; border: 1px solid var(--border-color); 
+            border-radius: 6px; font-size: 14px; background: #fff; box-sizing: border-box; 
+        }
+        label { display: block; font-size: 0.8rem; font-weight: bold; color: #666; margin-bottom: 4px; }
+
+        /* --- 3. LEGEND --- */
+        .info-bar { 
+            background: transparent; 
+            padding: 10px 0; 
+            font-size: 0.85rem; 
+            display: flex; flex-wrap: wrap; gap: 15px; 
+            align-items: center; justify-content: space-between;
+        }
+        .legend span { margin-right: 15px; display: inline-flex; align-items: center; }
+        .dot { height: 10px; width: 10px; border-radius: 50%; display: inline-block; margin-right: 5px; }
+        .row-counter { background: #e2e6ea; padding: 4px 10px; border-radius: 12px; font-weight: bold; color: #636e72; }
+
+        /* --- 4. TABLE SECTION --- */
+        .table-container { 
+            background: var(--card-bg); 
+            /* Rounded only at bottom now */
+            border-bottom-left-radius: 10px; 
+            border-bottom-right-radius: 10px; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        table { width: 100%; border-collapse: collapse; }
+        
+        th { 
+            text-align: left; 
+            padding: 15px; 
+            background-color: #f8f9fa; /* Opaque background is key */
+            border-bottom: 2px solid var(--border-color); 
+            color: #444; 
+            font-weight: 600;
+            
+            /* STICKY HEADER LOGIC */
+            position: sticky;
+            /* 85px matches the height of .sticky-controls roughly.
+               Because we removed the gap, this sits flush against the controls.
+            */
+            top: 86px; 
+            z-index: 900; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* Shadow to cover row text */
+        }
+
+        td { padding: 12px 15px; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
+        
+        .status-badge { padding: 5px 10px; border-radius: 4px; font-weight: 600; font-size: 0.8rem; display: inline-block; min-width: 80px; text-align: center; }
+        .is-blue   { background-color: var(--blue-bg); color: var(--blue-text); }
+        .is-green  { background-color: var(--green-bg); color: var(--green-text); }
+        .is-yellow { background-color: var(--yellow-bg); color: var(--yellow-text); }
+        .is-red    { background-color: var(--red-bg); color: var(--red-text); }
+        .empty-state { text-align: center; padding: 50px 20px; color: #888; font-style: italic; }
+
+        /* --- MOBILE --- */
+        @media screen and (max-width: 768px) {
+            .sticky-wrapper { position: static; } /* Unstick on mobile */
+            th { position: static; }
+            table, thead, tbody, th, td, tr { display: block; }
+            thead tr { position: absolute; top: -9999px; left: -9999px; }
+            tr { margin: 0 0 15px 0; border-bottom: 1px solid #eee; padding: 10px; background: #fff; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+            td { border: none; position: relative; padding-left: 0; padding-right: 0; display: flex; justify-content: space-between; align-items: center; text-align: right; }
+            td::before { content: attr(data-label); font-weight: bold; color: #666; text-align: left; padding-right: 10px; font-size: 0.9em; }
+            td[data-label="CODE7"] { background: #f8f9fa; margin: -10px -10px 10px -10px; padding: 10px; justify-content: flex-start; color: #333; font-weight: bold; }
+            td[data-label="รายละเอียด (Details)"] { display: block; text-align: left; margin-top: 5px; background: #fafafa; padding: 8px; border-radius: 5px; font-size: 0.9em; color: #555; }
+            .table-container { background: transparent; box-shadow: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="title-section">
+        <h1>CPI ชุดนอกเขต</h1>
+        <h2 id="dateDisplay">ธันวาคม 2568</h2>
+    </div>
+</div>
+
+<div class="sticky-wrapper">
+    <div class="sticky-controls">
+        <div class="controls">
+            <div class="control-group">
+                <label>Area</label>
+                <select id="areaSelector" onchange="renderTable()"></select>
+            </div>
+            
+            <div class="control-group">
+                <label>Status</label>
+                <select id="statusFilter" onchange="renderTable()">
+                    <option value="all">All Items</option>
+                    <option value="is-blue">เกิน (Over)</option>
+                    <option value="is-green">ครบ (Complete)</option>
+                    <option value="is-yellow">เก็บเพิ่ม (In Progress)</option>
+                    <option value="is-red">! ไม่มีรายการ (Missing)</option>
+                </select>
+            </div>
+            
+            <div class="control-group" style="flex: 2;">
+                <label>Search</label>
+                <input type="text" id="searchInput" placeholder="Search Code or Name..." onkeyup="renderTable()">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="info-bar">
+        <div class="legend">
+            <span><span class="dot" style="background:#007bff"></span>เกิน</span>
+            <span><span class="dot" style="background:#28a745"></span>ครบ</span>
+            <span><span class="dot" style="background:#ffc107"></span>เก็บเพิ่ม</span>
+            <span><span class="dot" style="background:#dc3545"></span>ขาด</span>
+        </div>
+        <div id="rowCounter" class="row-counter">Waiting...</div>
+    </div>
+
+    <div class="table-container">
+        <table id="dataTable">
+            <thead>
+                <tr>
+                    <th style="width: 15%">รหัสสินค้า</th>
+                    <th style="width: 25%">รายการ</th>
+                    <th style="width: 10%">ต้องเก็บ</th>
+                    <th style="width: 10%">เก็บจริง</th>
+                    <th style="width: 15%">Status</th>
+                    <th style="width: 25%">รายละเอียด</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    let rawData = [];
+    const areaSelector = document.getElementById('areaSelector');
+    const statusFilter = document.getElementById('statusFilter');
+    const tableBody = document.querySelector('#dataTable tbody');
+    const searchInput = document.getElementById('searchInput');
+    const countDisplay = document.getElementById('rowCounter');
+
+    // ================= DATA SECTION =================
+  // ================= DATA SECTION =================
+      async function fetchData() {
+          try {
+              // ใช้ fetch เพื่อดึงไฟล์ my_data.json
+              const response = await fetch('my_data2.json');
+              if (!response.ok) throw new Error('Network response was not ok');
+              
+              rawData = await response.json();
+              
+              // เมื่อโหลดข้อมูลเสร็จแล้ว ให้รันฟังก์ชัน init() เพื่อสร้าง Dropdown และตาราง
+              init();
+              
+          } catch (e) { 
+              console.error("Error loading JSON:", e);
+              tableBody.innerHTML = `<tr><td colspan="6" class="empty-state">ข้อผิดพลาด: ไม่สามารถโหลดไฟล์ my_data.json ได้</td></tr>`;
+          }
+      }
+
+      // เรียกใช้งานฟังก์ชันดึงข้อมูล
+      fetchData();
+      // ===============================================
+
+    function determineColor(value, threshold) {
+        const v = Number(value);
+        const t = Number(threshold);
+        if (v === 0) return 'is-red';         
+        if (v > t)   return 'is-blue';        
+        if (v === t) return 'is-green';       
+        return 'is-yellow';                   
+    }
+
+    function init() {
+        if (!rawData || !rawData.length) return;
+
+        // --- MANUAL DATE SETTING ---
+        // Just type whatever you want inside the quotes below:
+        document.getElementById('dateDisplay').textContent = "ธันวาคม 2568"; 
+        // ---------------------------
+
+        try {
+            const nonAreaColumns = ["CODE7", "รายการ", "กำหนดให้เก็บ", "รายละเอียด"];
+            const columns = Object.keys(rawData[0]).filter(k => !nonAreaColumns.includes(k));
+            
+            const defaultOption = document.createElement("option");
+            defaultOption.value = ""; 
+            defaultOption.textContent = "เลือกพื้นที่จัดเก็บ"; 
+            defaultOption.disabled = true; 
+            defaultOption.selected = true; 
+            areaSelector.appendChild(defaultOption);
+
+            columns.forEach(col => {
+                const option = document.createElement("option");
+                option.value = col;
+                option.textContent = col;
+                areaSelector.appendChild(option);
+            });
+
+            renderTable();
+        } catch (err) { console.error(err); }
+    }
+
+    function renderTable() {
+        const selectedArea = areaSelector.value;
+        const selectedStatus = statusFilter.value; 
+        const searchTerm = searchInput.value.toLowerCase();
+        
+        if (selectedArea === "") {
+            tableBody.innerHTML = `<tr><td colspan="6" class="empty-state">กรุณาเลือกพื้นที่ด้านบน (Please Select Area)</td></tr>`;
+            countDisplay.textContent = "Waiting...";
+            return;
+        }
+
+        let htmlContent = '';
+        let matchCount = 0;
+
+        rawData.forEach(item => {
+            const itemCode = String(item["CODE7"] || "").toLowerCase();
+            const itemName = String(item["รายการ"] || "").toLowerCase();
+            if (!itemName.includes(searchTerm) && !itemCode.includes(searchTerm)) return;
+            
+            const value = item[selectedArea] !== undefined ? item[selectedArea] : 0;
+            const threshold = item["กำหนดให้เก็บ"] || 0;
+            const colorClass = determineColor(value, threshold);
+
+            if (selectedStatus !== 'all' && colorClass !== selectedStatus) return;
+
+            matchCount++;
+            
+            let statusText = '';
+            if(colorClass === 'is-blue') statusText = 'เกิน';
+            else if(colorClass === 'is-green') statusText = 'ครบ';
+            else if(colorClass === 'is-red') statusText = '! ไม่มีรายการ';
+            else statusText = 'เก็บเพิ่ม';
+
+            // CRITICAL CHANGE FOR MOBILE: Added data-label attributes
+            htmlContent += `
+                <tr>
+                    <td data-label="รหัสสินค้า">${item["CODE7"] || "-"}</td>
+                    <td data-label="รายการ (Item)"><strong>${item["รายการ"] || "Unknown"}</strong></td>
+                    <td data-label="ต้องเก็บ">${threshold}</td>
+                    <td data-label="เก็บจริง">${value}</td>
+                    <td data-label="Status"><span class="status-badge ${colorClass}">${statusText}</span></td>
+                    <td data-label="รายละเอียด">${item["รายละเอียด"] || "-"}</td>
+                </tr>
+            `;
+        });
+
+        if(matchCount > 0) {
+            tableBody.innerHTML = htmlContent;
+        } else {
+            tableBody.innerHTML = `<tr><td colspan="6" class="empty-state">ไม่พบข้อมูล (No items found)</td></tr>`;
+        }
+        
+        countDisplay.textContent = `${matchCount} items`;
+    }
+
+    init();
+
+    
+</script>
+
+</body>
+</html>
